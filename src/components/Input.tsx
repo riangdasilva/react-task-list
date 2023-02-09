@@ -1,27 +1,33 @@
 import { Task } from '../types/Task';
 import { useState } from 'react';
+import { MdAdd } from 'react-icons/md';
+import { useAppDispatch } from '../redux/hooks';
+import { add } from '../redux/tasksSlice';
 
-export default function Input({ tasks, setTasks }: { tasks: Task[]; setTasks: Function }) {
-  const [title, setTitle] = useState<string>('');
+export default function Input() {
+  const [content, setContent] = useState<string>('');
+  const dispatch = useAppDispatch();
 
-  const handleAdd = () => {
-    if (title === '') return;
-    setTasks([...tasks, { id: Date.now(), content: title }]);
-    setTitle('');
+  const handleAdd = (e: any) => {
+    if (e.key === 'Enter' || e.type === 'click') {
+      if (content === '') return;
+      dispatch(add({ id: Date.now(), content: content, completed: false }));
+      setContent('');
+    }
   };
 
   return (
-    <div className="mx-auto mb-2 flex max-w-md flex-row rounded-xl">
+    <div className="mb-2 flex">
       <input
-        onChange={(e) => setTitle(e.target.value)}
-        value={title}
-        className="mr-2 w-full rounded-xl bg-slate-600 p-4 outline-none"
         type="text"
-        name="title"
-        id="title"
-        placeholder="I need to do..."
+        onChange={(e) => setContent(e.target.value)}
+        value={content}
+        onKeyDown={handleAdd}
+        className="mr-2 w-full rounded-lg bg-neutral-200 p-4 outline-none dark:bg-neutral-800"
       />
-      <input onClick={handleAdd} type="button" value="Add" className="rounded-xl bg-slate-600 p-4 outline outline-0 hover:cursor-pointer hover:outline-2" />
+      <button onClick={handleAdd} className="rounded-lg bg-neutral-200 p-4 dark:bg-neutral-800">
+        <MdAdd className="h-8 w-8" />
+      </button>
     </div>
   );
 }
